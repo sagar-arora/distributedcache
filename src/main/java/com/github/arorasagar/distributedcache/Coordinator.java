@@ -2,10 +2,7 @@ package com.github.arorasagar.distributedcache;
 
 import com.github.arorasagar.distributedcache.client.Client;
 import com.github.arorasagar.distributedcache.client.MetaDataClient;
-import com.github.arorasagar.distributedcache.coordinator.LocalAction;
-import com.github.arorasagar.distributedcache.coordinator.LocalActionCallable;
-import com.github.arorasagar.distributedcache.coordinator.RemoteMessageCallable;
-import com.github.arorasagar.distributedcache.coordinator.ResultMerger;
+import com.github.arorasagar.distributedcache.coordinator.*;
 import com.github.arorasagar.distributedcache.messages.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +29,8 @@ public class Coordinator {
     private final Locator locator;
     ExecutorService executor;
     private ConcurrentMap<Destination, Client> mapping;
-
+    Destination destinationLocal;
+    private static final ResultMerger FIRST_RESPONSE_MERGER = new FirstResponseMerger();
     public Coordinator(Server server) {
         this.server = server;
         this.configuration = server.getConfiguration();
@@ -42,6 +40,8 @@ public class Coordinator {
         this.locator = new Locator(server.getConfiguration(), server.getClusterMembership());
         this.executor = Executors.newFixedThreadPool(4);
         this.mapping = new ConcurrentHashMap<>();
+        this.destinationLocal = new Destination();
+        this.destinationLocal.setDestinationId(server.getServerId().getU());
     }
 
     private Client clientForDestination(Destination destination){
@@ -88,7 +88,6 @@ public class Coordinator {
         if (keyspace == null) {
             throw new RuntimeException("keyspace is not found " + baseMessage);
         }
-
         if (baseMessage instanceof LocatorMessage) {
             LOGGER.info("Got request for LocatorMessage: {}", GSON.toJson(baseMessage));
             LocatorMessage locatorMessage = (LocatorMessage) baseMessage;
@@ -105,6 +104,16 @@ public class Coordinator {
             Integer tokenKey = keyspace.getKeyspaceMetaData().getPartitioner().getPartition(getKVMessageRequest.getKey());
             Token token = new Token(String.valueOf(tokenKey), getKVMessageRequest.getKey());
             List<Destination> destinations = destinationsForToken(token, keyspace);
+            Store store = keyspace.getStores().get(getKVMessageRequest.getStore());
+            if (store == null) {
+                new RuntimeException("store not found " + getKVMessageRequest.getStore());
+            }
+
+            LocalAction action = new LocalKeyValueAction(baseMessage, keyspace, store);
+            Response response = handleMessage(token, baseMessage, destinations,
+                    10000, destinationLocal, action, FIRST_RESPONSE_MERGER);
+
+            return response;
         }
 /*        if (baseMessage instanceof GetKVMessageRequest) {
             LOGGER.info("Got request for PutKVMessageRequest: {}", GSON.toJson(baseMessage));
@@ -207,10 +216,10 @@ public class Coordinator {
             throw new RuntimeException("No place to route message");
         }
         if (destinations.size() == 1 && destinations.contains(destinationLocal)) {
-            return action.handleReqest();
+            return action.handleRequest();
         }
         if (((Routable) message).getReRoute()) {
-            return action.handleReqest();
+            return action.handleRequest();
         }
         if (!((Routable) message).getReRoute()){
             ((Routable) message).setReRoute(true);

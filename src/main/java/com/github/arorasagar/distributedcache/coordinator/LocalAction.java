@@ -17,5 +17,5 @@ public abstract class LocalAction {
         this.columnFamily = cf;
     }
 
-    public abstract Response handleReqest();
+    public abstract Response handleRequest();
 }
