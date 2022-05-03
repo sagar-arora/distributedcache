@@ -4,6 +4,7 @@ import com.github.arorasagar.distributedcache.Destination;
 import com.github.arorasagar.distributedcache.ServerId;
 import com.github.arorasagar.distributedcache.Keyspace;
 import com.github.arorasagar.distributedcache.Token;
+import com.github.arorasagar.distributedcache.cluster.ClusterMembership;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public interface Router {
      * @param requestKeyspace
      * @return all hosts a given request can be routed to
      */
-    List<Destination> routesTo(ServerId local, Keyspace requestKeyspace, Token token);
+    public List<Destination> routesTo(ServerId local, Keyspace requestKeyspace,
+                                      ClusterMembership clusterMembership, Token token);
 
 }

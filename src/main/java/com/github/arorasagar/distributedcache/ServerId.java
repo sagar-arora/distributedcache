@@ -9,12 +9,17 @@ public class ServerId {
 
     private final Configuration configuration;
     private UUID u;
+    private String id;
 
-    public ServerId(Configuration configuration){
+    public ServerId(Configuration configuration) {
         this.configuration = configuration;
     }
 
-    public void init(){
+    public void init() {
+        if (configuration.isLocalMode()) {
+            id = configuration.getId();
+            return;
+        }
         File f = new File(configuration.getDataDirectory());
         if (!f.exists()) {
             boolean created = f.mkdir();
@@ -41,6 +46,7 @@ public class ServerId {
                                 new FileInputStream(uuid)));
                 String suuid = (String) d.readObject();
                 u = UUID.fromString(suuid);
+                id = u.toString();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("im dead", e);
             }
@@ -48,8 +54,8 @@ public class ServerId {
         }
     }
 
-    public UUID getU() {
-        return u;
-    }
 
+    public String getU() {
+        return id;
+    }
 }

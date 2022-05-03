@@ -15,7 +15,12 @@ public class XmlStorage implements MetaDataStorage {
     public void persist(Configuration configuration, Map<String, KeyspaceAndStoreMetadata> writeThis) {
         XMLEncoder e ;
         try {
-
+            File file = new File(configuration.getDataDirectory());
+            if (!file.exists()) {
+                if(!file.mkdir()) {
+                    throw new RuntimeException("Couldn't create the file...");
+                }
+            }
             e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(
                     new File(configuration.getDataDirectory(), SCHEMA_NAME))));
         } catch (FileNotFoundException ex){

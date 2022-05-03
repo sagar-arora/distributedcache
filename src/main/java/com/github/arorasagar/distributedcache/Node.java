@@ -10,8 +10,8 @@ import lombok.*;
 public class Node {
     private  String address;
     private  int port;
-
+    private String id;
     public String toString() {
-        return "[address= " + address + ", port=" + port + "]";
+        return address + ":" + port;
     }
 }

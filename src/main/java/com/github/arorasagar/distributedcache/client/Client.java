@@ -2,7 +2,7 @@ package com.github.arorasagar.distributedcache.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.arorasagar.distributedcache.BaseMessage;
+import com.github.arorasagar.distributedcache.messages.BaseMessage;
 import com.github.arorasagar.distributedcache.BaseResponse;
 import com.github.arorasagar.distributedcache.Response;
 import org.apache.http.HttpResponse;

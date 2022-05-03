@@ -2,6 +2,8 @@ package com.github.arorasagar.distributedcache;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.arorasagar.distributedcache.metadata.MetaDataStorage;
+import com.github.arorasagar.distributedcache.metadata.XmlStorage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -16,10 +18,20 @@ public class Configuration {
 
     private int transportPort = 7070;
     private String transportHost = "127.0.0.1";
+    private String metaDataStorageClass = XmlStorage.class.getName();
     private List<Node> nodes = new ArrayList<>();
     private String dataDirectory;
-
+    private boolean localMode = true;
+    private String id;
     public Configuration() {
+    }
+
+    public boolean isLocalMode() {
+        return localMode;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public void setDataDirectory(String dataDirectory) {
@@ -61,4 +73,9 @@ public class Configuration {
 
        return configuration;
     }
+
+    public String getMetaDataStorageClass() {
+        return metaDataStorageClass;
+    }
+
 }

@@ -2,12 +2,12 @@ package com.github.arorasagar.distributedcache;
 
 import com.github.arorasagar.distributedcache.metadata.KeyspaceMetadata;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Keyspace {
 
-    Map<String, Store> stores = new HashMap<>();
+    ConcurrentHashMap<String, KvStore> stores = new ConcurrentHashMap<>();
     Configuration configuration;
     KeyspaceMetadata keyspaceMetadata;
 
@@ -15,19 +15,13 @@ public class Keyspace {
         this.configuration = configuration;
     }
 
-    public void addKeyspace(String name) {
-        Store store = new Store(configuration);
-        addKeyspace(name, store);
+    public void addKeyspace(String name, KvStore kvStore) {
+        stores.put(name, kvStore);
     }
 
-    public void addKeyspace(String name, Store store) {
-        stores.put(name, store);
+    public ConcurrentHashMap<String, KvStore> getStores() {
+        return stores;
     }
-
-    public Store getKeyspace(String name) {
-        return stores.get(name);
-    }
-
 
     public KeyspaceMetadata getKeyspaceMetaData() {
         return keyspaceMetadata;

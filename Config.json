@@ -1,18 +1,19 @@
 {
   "transportPort": 7010,
-  "transportHost": "localhost",
+  "transportHost": "127.0.0.1",
+  "dataDirectory": "C:\\Users\\arora\\workplace\\distributedcahce\\temp",
+  "localMode": true,
+  "id": "2",
   "nodes": [
     {
       "address": "127.0.0.1",
-      "port": 7010
+      "port": 7009,
+      "id": "1"
     },
     {
       "address": "127.0.0.1",
-      "port": 7011
-    },
-    {
-      "address": "127.0.0.1",
-      "port": 7012
+      "port": 7011,
+      "id": "3"
     }
   ]
 }

@@ -1,44 +1,28 @@
 package com.github.arorasagar.distributedcache;
 
+import com.github.arorasagar.distributedcache.metadata.StoreMetadata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public abstract class Store {
+    protected final Keyspace keyspace;
+    protected final StoreMetadata storeMetadata;
 
-public class Store {
-    Map<String, String> keyVals = new HashMap<>();
-
-    Partitioner partitioner;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Store.class);
-
-    class StoreMetadata {
-        Map<Integer, Node> tokenMap = new HashMap<>();
-
-        public StoreMetadata() {
-            List<Node> nodes = configuration.getNodes();
-            if (nodes != null) {
-                for (Node node : nodes) {
-                    int loc = partitioner.getPartition(node.toString());
-                    LOGGER.info("Position for node: {} is {}", node.toString(), loc);
-                    tokenMap.put(loc, node);
-                }
-            }
-        }
+    public Store(Keyspace keyspace, StoreMetadata cfmd) {
+        this.keyspace = keyspace;
+        this.storeMetadata = cfmd;
     }
 
-    StoreMetadata storeMetadata;
-    Configuration configuration;
-
-    public Store(Configuration configuration) {
-        this.configuration = configuration;
-        this.partitioner = new Partitioner();
-        this.storeMetadata = new StoreMetadata();
+    public StoreMetadata getStoreMetadata() {
+        return storeMetadata;
     }
 
-    public void add(String key, String val) {
-        this.keyVals.put(key, val);
+    public Keyspace getKeyspace() {
+        return keyspace;
     }
+
+    public abstract void init() throws IOException;
+
+    public abstract void shutdown() throws IOException;
+
 }

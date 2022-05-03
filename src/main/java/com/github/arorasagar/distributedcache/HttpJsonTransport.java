@@ -1,7 +1,7 @@
 package com.github.arorasagar.distributedcache;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.arorasagar.distributedcache.messages.BaseMessage;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Server;

@@ -1,5 +1,6 @@
-package com.github.arorasagar.distributedcache;
+package com.github.arorasagar.distributedcache.messages;
 
+import com.github.arorasagar.distributedcache.messages.BaseMessage;
 import lombok.*;
 
 @NoArgsConstructor
